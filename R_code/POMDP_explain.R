@@ -1,0 +1,123 @@
+library("pomdp")
+library(igraph)
+library(plotly)
+Explain<-POMDP( name="LOE",discount=0.75,horizon=5,states=c("D0","D1","D2","D3","D4","D5","D6","D7","D8"),
+                actions=c("LoE_1","LoE2","LoE3","LoE4","LoE5","LoE6","LoE7","LoE8"),observations=c("cluster0","cluster1","cluster2","cluster3","cluster4"),start="uniform",
+                transition_prob=list(LoE_1=rbind(c(1,0,0,0,0,0,0,0,0),c(0.45,0.1,0.45,0,0,0,0,0,0),
+                                               c(0,0,1,0,0,0,0,0,0),c(0,0,0,1,0,0,0,0,0),c(0,0,0,0,1,0,0,0,0),c(0,0,0,0,0,1,0,0,0),
+                                               c(0,0,0,0,0,0,1,0,0),c(0,0,0,0,0,0,0,1,0),c(0,0,0,0,0,0,0,0,1)),
+                                     LoE2=rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,0,0,0,0,0,0,0),
+                                               c(0.3,0.3,0.1,0.3,0,0,0,0,0),c(0,0,0,1,0,0,0,0,0),c(0,0,0,0,1,0,0,0,0),c(0,0,0,0,0,1,0,0,0),
+                                               c(0,0,0,0,0,0,1,0,0),c(0,0,0,0,0,0,0,1,0),c(0,0,0,0,0,0,0,0,1)),
+                                     LoE3=rbind(c(1,0,0,0,0,0,0,0,0),c(0,1,0,0,0,0,0,0,0),
+                                               c(0,0,1,0,0,0,0,0,0),c(0.3,0,0.3,0.1,0.3,0,0,0,0),c(0,0,0,0,1,0,0,0,0),c(0,0,0,0,0,1,0,0,0),
+                                               c(0,0,0,0,0,0,1,0,0),c(0,0,0,0,0,0,0,1,0),c(0,0,0,0,0,0,0,0,1)),
+                                     LoE4=rbind(c(1, 0, 0, 0, 0, 0, 0, 0, 0), c(0, 1, 0, 0, 0, 0, 0, 0, 0),
+                                               c(0, 0, 1, 0, 0, 0, 0, 0, 0), c(0, 0, 0, 1, 0, 0, 0, 0, 0),
+                                               c(0.3, 0, 0, 0.3, .1, 0.3, 0, 0, 0), c(0, 0, 0, 0, 0, 1, 0, 0, 0),
+                                               c(0, 0, 0, 0, 0, 0, 1, 0, 0), c(0, 0, 0, 0, 0, 0, 0, 1, 0),
+                                               c(0, 0, 0, 0, 0, 0, 0, 0, 1)),
+                                     LoE5=rbind(c(1, 0, 0, 0, 0, 0, 0, 0, 0), c(0, 1, 0, 0, 0, 0, 0, 0, 0),
+                                               c(0, 0, 1, 0, 0, 0, 0, 0, 0), c(0, 0, 0, 1, 0, 0, 0, 0, 0),
+                                               c(0, 0, 0, 0, 1, 0, 0, 0, 0), c(0.3, 0, 0, 0, 0.3, 0.1, 0.3, 0, 0),
+                                               c(0, 0, 0, 0, 0, 0, 1, 0, 0), c(0, 0, 0, 0, 0, 0, 0, 1, 0),
+                                               c(0, 0, 0, 0, 0, 0, 0, 0, 1)),
+                                     LoE6=rbind(c(1, 0, 0, 0, 0, 0, 0, 0, 0), c(0, 1, 0, 0, 0, 0, 0, 0, 0),
+                                               c(0, 0, 1, 0, 0, 0, 0, 0, 0), c(0, 0, 0, 1, 0, 0, 0, 0, 0),
+                                               c(0, 0, 0, 0, 1, 0, 0, 0, 0), c(0, 0, 0, 0, 0, 1, 0, 0, 0),
+                                               c(0.3, 0, 0, 0, 0, 0.3, 0.1, 0.3, 0), c(0, 0, 0, 0, 0, 0, 0, 1, 0),
+                                               c(0, 0, 0, 0, 0, 0, 0, 0, 1)),
+                                     LoE7=rbind(c(1, 0, 0, 0, 0, 0, 0, 0, 0), c(0, 1, 0, 0, 0, 0, 0, 0, 0),
+                                               c(0, 0, 1, 0, 0, 0, 0, 0, 0), c(0, 0, 0, 1, 0, 0, 0, 0, 0),
+                                               c(0, 0, 0, 0, 1, 0, 0, 0, 0), c(0, 0, 0, 0, 0, 1, 0, 0, 0),
+                                               c(0, 0, 0, 0, 0, 0, 1, 0, 0), c(0.3, 0, 0, 0, 0, 0, 0.3, 0.1, 0.3),
+                                               c(0, 0, 0, 0, 0, 0, 0, 0, 1)),
+                                     LoE8=rbind(c(1, 0, 0, 0, 0, 0, 0, 0, 0), c(0, 1, 0, 0, 0, 0, 0, 0, 0),
+                                               c(0, 0, 1, 0, 0, 0, 0, 0, 0), c(0, 0, 0, 1, 0, 0, 0, 0, 0),
+                                               c(0, 0, 0, 0, 1, 0, 0, 0, 0), c(0, 0, 0, 0, 0, 1, 0, 0, 0),
+                                               c(0, 0, 0, 0, 0, 0, 1, 0, 0), c(0, 0, 0, 0, 0, 0, 0, 1, 0),
+                                               c(0.45, 0, 0, 0, 0, 0, 0, 0.45, 0.1))),
+                observation_prob=list(LoE_1=rbind(c(0,0.0,0.0,0.0,1.0), c(0,0.35,0.19,0.19,0.27),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0)),
+                                      LoE2=rbind(c(0,0.0,0.0,0.0,1.0), c(0.25,0.25,0.25,0.25,0),c(0,0.43,0.1,0.20,0.27),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0)),
+                                      LoE3=rbind(c(0,0.0,0.0,0.0,1.0), c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0,0.39,0.13,0.16,0.32),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0)),
+                                      LoE4=rbind(c(0,0.0,0.0,0.0,1.0), c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0,0.30,0.17,0.15,0.38),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0)),
+                                      LoE5=rbind(c(0,0.0,0.0,0.0,1.0), c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0,0.37,0.11,0.13,0.39),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0)),
+                                      LoE6=rbind(c(0,0.0,0.0,0.0,1.0), c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0,0.27,0.20,0.20,0.33),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0)),
+                                      LoE7=rbind(c(0,0.0,0.0,0.0,1.0), c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0,0.39,0.12,0.21,0.28),c(0.25,0.25,0.25,0.25,0)),
+                                      LoE8=rbind(c(0,0.0,0.0,0.0,1.0), c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0.25,0.25,0.25,0.25,0),c(0,0.35,0.16,0.13,0.36))),
+                reward = rbind(
+                  R_(action="*",start.state = "D0",end.state = "D0",observation = "cluster4",value = 1),
+                  R_(action = "LoE_1",start.state = "D1",end.state = "D0",observation = "cluster4",value = 1),
+                  R_(action = "LoE_1",start.state = "*",end.state = "*",observation = 'cluster0',value = -1),
+                  R_(action = "LoE_1",start.state = "*",end.state = "*",observation = 'cluster1',value = -1),
+                  R_(action = "LoE_1",start.state = "*",end.state = "*",observation = 'cluster2',value = -1),
+                  R_(action = "LoE_1",start.state = "*",end.state = "*",observation = 'cluster3',value = -1),
+                  R_(action = "LoE_1",start.state = "*",end.state = "*",observation = 'cluster4',value = 1),
+                  R_(action = "LoE2",start.state = "D2",end.state = "D1",observation = "*",value = -1),
+                  R_(action = "LoE2",start.state = "*",end.state = "*",observation = "cluster4",value = 1),
+                  R_(action = "LoE2",start.state = "*",end.state = "*",observation = "cluster3",value = -1),
+                  R_(action = "LoE2",start.state = "*",end.state = "*",observation = "cluster2",value = -1),
+                  R_(action = "LoE2",start.state = "*",end.state = "*",observation = "cluster0",value = -1),
+                  R_(action = "LoE2",start.state = "*",end.state = "*",observation = "cluster1",value = -1),
+                  R_(action = "LoE3",start.state = "D3",end.state = "D2",observation = "*",value = -1),
+                  R_(action = "LoE3",start.state = "*",end.state = "*",observation = "cluster1",value = -1),
+                  R_(action = "LoE3",start.state = "*",end.state = "*",observation = "cluster0",value = -1),
+                  R_(action = "LoE3",start.state = "*",end.state = "*",observation = "cluster2",value = -1),
+                  R_(action = "LoE3",start.state = "*",end.state = "*",observation = "cluster3",value = -1),
+                  R_(action = "LoE3",start.state = "*",end.state = "*",observation = "cluster4",value = 1),
+                  R_(action = "LoE4",start.state = "D4",end.state = "D3",observation = "*",value = -1),
+                  R_(action = "LoE4",start.state = "*",end.state = "*",observation = "cluster1",value = -1),
+                  R_(action = "LoE4",start.state = "*",end.state = "*",observation = "cluster0",value = -1),
+                  R_(action = "LoE4",start.state = "*",end.state = "*",observation = "cluster2",value = -1),
+                  R_(action = "LoE4",start.state = "*",end.state = "*",observation = "cluster3",value = -1),
+                  R_(action = "LoE4",start.state = "*",end.state = "*",observation = "cluster4",value = 1),
+                  R_(action = "LoE5",start.state = "D5",end.state = "D0",observation = "cluster1",value = 1),
+                  R_(action = "LoE5",start.state = "D5",end.state = "D4",observation = "*",value = -1),
+                  R_(action = "LoE5",start.state = "*",end.state = "*",observation = "cluster1",value = -1),
+                  R_(action = "LoE5",start.state = "*",end.state = "*",observation = "cluster0",value = -1),
+                  R_(action = "LoE5",start.state = "*",end.state = "*",observation = "cluster2",value = -1),
+                  R_(action = "LoE5",start.state = "*",end.state = "*",observation = "cluster3",value = -1),
+                  R_(action = "LoE5",start.state = "*",end.state = "*",observation = "cluster4",value = 1),
+                  R_(action = "LoE6",start.state = "D6",end.state = "D5",observation = "*",value = -1),
+                  R_(action = "LoE6",start.state = "*",end.state = "*",observation = "cluster1",value = -1),
+                  R_(action = "LoE6",start.state = "*",end.state = "*",observation = "cluster0",value = -1),
+                  R_(action = "LoE6",start.state = "*",end.state = "*",observation = "cluster2",value = -1),
+                  R_(action = "LoE6",start.state = "*",end.state = "*",observation = "cluster3",value = -1),
+                  R_(action = "LoE6",start.state = "*",end.state = "*",observation = "cluster4",value = 1),
+                  R_(action = "LoE7",start.state = "D7",end.state = "D6",observation = "*",value = -1),
+                  R_(action = "LoE7",start.state = "*",end.state = "*",observation = "cluster1",value = -1),
+                  R_(action = "LoE7",start.state = "*",end.state = "*",observation = "cluster0",value = -1),
+                  R_(action = "LoE7",start.state = "*",end.state = "*",observation = "cluster2",value = -1),
+                  R_(action = "LoE7",start.state = "*",end.state = "*",observation = "cluster3",value = -1),
+                  R_(action = "LoE7",start.state = "*",end.state = "*",observation = "cluster4",value = 1),
+                  R_(action = "LoE8",start.state = "D8",end.state = "D7",observation = "*",value = -1),
+                  R_(action = "LoE8",start.state = "*",end.state = "*",observation = "cluster1",value = -1),
+                  R_(action = "LoE8",start.state = "*",end.state = "*",observation = "cluster0",value = -1),
+                  R_(action = "LoE8",start.state = "*",end.state = "*",observation = "cluster3",value = -1),
+                  R_(action = "LoE8",start.state = "*",end.state = "*",observation = "cluster2",value = -1),
+                  R_(action = "LoE8",start.state = "*",end.state = "*",observation = "cluster4",value = -1)
+                ))
+Explain
+sol<-solve_POMDP(model = Explain,method = "grid")
+sol$solution
+policy(sol)
+sol$solution
+pg <- policy_graph(sol, show_belief = TRUE,
+                   simplify_observations = TRUE, remove_unreachable_nodes = TRUE)
+pg
+par(mfrow=c(1,1), mar=c(0.0,0.0,0.0,0.0))
+layout_type <- layout_as_tree(pg, root = 1, mode = "out")
+plot(pg, layout = layout_type*20,
+     edge.label = abbreviate(E(pg)$label),
+     edge.label.cex=1.2,vertex.dist = 5,
+     vertex.label = V(pg)$action,vertex.label.cex=1.0,
+     vertex.size = 25,edge.width = 4,edge.label.dist = 0.5)
+
+plot_policy_graph(sol,vertex.label = V(pg)$action,vertex.label.cex=2,
+                  edge.width = 2,edge.label.dist = 0.5,edge.label.cex=1.0)
+legend("topright",c("D0","D1","D2","D3","D4","D5","D6","D7","D8"),cex=2,
+       fill = c("red","blue","green","purple","orange","yellow","brown","pink","grey"))
+#plot(sol)
+sol$reward
+sol
+
